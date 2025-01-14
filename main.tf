@@ -43,7 +43,7 @@ resource "aws_lambda_function" "example_lambda" {
   role             = aws_iam_role.lambda_role.arn
   handler          = "lambda_function.lambda_handler"
   runtime          = "python3.12"
-  architectures     = "x86_64"
+  architectures     = ["x86_64"]
   memory_size      = 10240
   timeout          = 30
   ephemeral_storage {
@@ -63,12 +63,22 @@ resource "aws_lambda_function" "example_lambda" {
   # }
 }
 
-# Lambda Function Event Invoke Config
-resource "aws_lambda_event_invoke_config" "example_invoke_config" {
-  function_name          = aws_lambda_function.example_lambda.function_name
-  maximum_event_age_in_seconds = 21600
+resource "aws_lambda_event_source_mapping" "example_mapping" {
+  event_source_arn = "arn:aws:sqs:region:account-id:queue-name" # Example: SQS
+  function_name    = aws_lambda_function.example_lambda.function_name
+  batch_size       = 10
+
+  # Retry and event age settings
   maximum_retry_attempts = 2
+  maximum_record_age_in_seconds = 21600
 }
+
+# # Lambda Function Event Invoke Config
+# resource "aws_lambda_event_invoke_config" "example_invoke_config" {
+#   function_name          = aws_lambda_function.example_lambda.function_name
+#   maximum_event_age_in_seconds = 21600
+#   maximum_retry_attempts = 2
+# }
 
 # API Gateway (api1)
 resource "aws_apigatewayv2_api" "api1" {
