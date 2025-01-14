@@ -71,7 +71,7 @@ resource "aws_lambda_event_source_mapping" "example_mapping" {
 
   # Retry and event age settings
   # maximum_retry_attempts = 2
-  maximum_record_age_in_seconds = 21600
+  # maximum_record_age_in_seconds = 21600
 }
 
 # # Lambda Function Event Invoke Config
