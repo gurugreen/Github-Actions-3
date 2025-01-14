@@ -103,38 +103,38 @@ resource "aws_api_gateway_deployment" "example_deployment" {
   stage_name  = "prod"
 
   depends_on = [
-    aws_api_gateway_integration.example_integration,
-    aws_api_gateway_integration.depreciation_integration
+    aws_api_gateway_integration.example_integration
+    # aws_api_gateway_integration.depreciation_integration
   ]
 }
 
-# Optionally, create another resource and method for depreciation-posting (if needed)
-resource "aws_api_gateway_resource" "depreciation_resource" {
-  rest_api_id = aws_api_gateway_rest_api.example_api.id
-  parent_id   = aws_api_gateway_rest_api.example_api.root_resource_id
-  path_part   = "depreciation-posting"
-}
+# # Optionally, create another resource and method for depreciation-posting (if needed)
+# resource "aws_api_gateway_resource" "depreciation_resource" {
+#   rest_api_id = aws_api_gateway_rest_api.example_api.id
+#   parent_id   = aws_api_gateway_rest_api.example_api.root_resource_id
+#   path_part   = "depreciation-posting"
+# }
 
-resource "aws_api_gateway_method" "depreciation_post_method" {
-  rest_api_id   = aws_api_gateway_rest_api.example_api.id
-  resource_id   = aws_api_gateway_resource.depreciation_resource.id
-  http_method   = "POST"
-  authorization = "NONE"
-}
+# resource "aws_api_gateway_method" "depreciation_post_method" {
+#   rest_api_id   = aws_api_gateway_rest_api.example_api.id
+#   resource_id   = aws_api_gateway_resource.depreciation_resource.id
+#   http_method   = "POST"
+#   authorization = "NONE"
+# }
 
-resource "aws_api_gateway_integration" "depreciation_integration" {
-  rest_api_id = aws_api_gateway_rest_api.example_api.id
-  resource_id = aws_api_gateway_resource.depreciation_resource.id
-  http_method = aws_api_gateway_method.depreciation_post_method.http_method
-  integration_http_method = "POST"
-  type = "AWS_PROXY"
-  uri = "arn:aws:apigateway:${var.aws_region}:lambda:path/2015-03-31/functions/${aws_lambda_function.example_lambda.arn}/invocations"
-}
+# resource "aws_api_gateway_integration" "depreciation_integration" {
+#   rest_api_id = aws_api_gateway_rest_api.example_api.id
+#   resource_id = aws_api_gateway_resource.depreciation_resource.id
+#   http_method = aws_api_gateway_method.depreciation_post_method.http_method
+#   integration_http_method = "POST"
+#   type = "AWS_PROXY"
+#   uri = "arn:aws:apigateway:${var.aws_region}:lambda:path/2015-03-31/functions/${aws_lambda_function.example_lambda.arn}/invocations"
+# }
 
-resource "aws_lambda_permission" "depreciation_lambda_permission" {
-  statement_id  = "AllowAPIGatewayInvokeDepreciation"
-  action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.example_lambda.arn
-  principal     = "apigateway.amazonaws.com"
-  source_arn    = "${aws_api_gateway_rest_api.example_api.execution_arn}/*/*"
-}
+# resource "aws_lambda_permission" "depreciation_lambda_permission" {
+#   statement_id  = "AllowAPIGatewayInvokeDepreciation"
+#   action        = "lambda:InvokeFunction"
+#   function_name = aws_lambda_function.example_lambda.arn
+#   principal     = "apigateway.amazonaws.com"
+#   source_arn    = "${aws_api_gateway_rest_api.example_api.execution_arn}/*/*"
+# }
