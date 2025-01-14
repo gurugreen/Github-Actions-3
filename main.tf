@@ -44,7 +44,7 @@ resource "aws_lambda_function" "example_lambda" {
   handler          = "lambda_function.lambda_handler"
   runtime          = "python3.12"
   architectures     = ["x86_64"]
-  memory_size      = 10240
+  memory_size      = 128
   timeout          = 30
   ephemeral_storage {
     size = 512
