@@ -92,8 +92,9 @@ resource "aws_api_gateway_integration" "example_integration" {
 resource "aws_lambda_permission" "example_lambda_permission" {
   statement_id  = "AllowAPIGatewayInvoke"
   action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.example_lambda.function_name
+  function_name = aws_lambda_function.example_lambda.arn
   principal     = "apigateway.amazonaws.com"
+  source_arn    = "${aws_api_gateway_rest_api.example_api.execution_arn}/*/*"
 }
 
 # Deploy the API Gateway
@@ -102,7 +103,8 @@ resource "aws_api_gateway_deployment" "example_deployment" {
   stage_name  = "prod"
 
   depends_on = [
-    aws_api_gateway_integration.example_integration
+    aws_api_gateway_integration.example_integration,
+    aws_api_gateway_integration.depreciation_integration
   ]
 }
 
@@ -132,6 +134,7 @@ resource "aws_api_gateway_integration" "depreciation_integration" {
 resource "aws_lambda_permission" "depreciation_lambda_permission" {
   statement_id  = "AllowAPIGatewayInvokeDepreciation"
   action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.example_lambda.function_name
+  function_name = aws_lambda_function.example_lambda.arn
   principal     = "apigateway.amazonaws.com"
+  source_arn    = "${aws_api_gateway_rest_api.example_api.execution_arn}/*/*"
 }
