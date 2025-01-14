@@ -43,21 +43,24 @@ resource "aws_lambda_function" "example_lambda" {
   role             = aws_iam_role.lambda_role.arn
   handler          = "lambda_function.lambda_handler"
   runtime          = "python3.12"
-  architecture     = "x86_64"
+  architectures     = "x86_64"
   memory_size      = 10240
   timeout          = 30
   ephemeral_storage {
     size = 512
   }
   package_type     = "Zip"
-  snap_start       = "None" # SnapStart not applied
-  filename         = "./lambda_function.zip" # Path to your Lambda deployment package
-
-  # Runtime Management Configuration
-  runtime_management_config {
-    update_runtime_on       = "Auto"
-    runtime_update_mode     = "Function"
+  # snap_start       = "None" # SnapStart not applied
+  snap_start {
+    apply_on = "None"
   }
+  filename         = "./lambda_function.zip" # Path to your Lambda deployment package
+  
+  # # Runtime Management Configuration
+  # runtime_management_config {
+  #   update_runtime_on       = "Auto"
+  #   runtime_update_mode     = "Function"
+  # }
 }
 
 # Lambda Function Event Invoke Config
