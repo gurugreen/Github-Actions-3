@@ -75,7 +75,7 @@ resource "aws_api_gateway_method" "example_post_method" {
   rest_api_id   = aws_api_gateway_rest_api.example_api.id
   resource_id   = aws_api_gateway_resource.example_resource.id
   http_method   = "POST"
-  authorization = "CUSTOM"
+  authorization = "NONE"
   # authorizer_id = aws_api_gateway_authorizer.custom_authorizer.id
 }
 
@@ -121,7 +121,7 @@ resource "aws_api_gateway_method" "depreciation_post_method" {
   rest_api_id   = aws_api_gateway_rest_api.example_api.id
   resource_id   = aws_api_gateway_resource.depreciation_resource.id
   http_method   = "POST"
-  authorization = "CUSTOM"
+  authorization = "NONE"
   # authorizer_id = aws_api_gateway_authorizer.custom_authorizer.id
 }
 
