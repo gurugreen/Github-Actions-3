@@ -55,68 +55,83 @@ resource "aws_lambda_function" "example_lambda" {
     apply_on = "None"
   }
   filename         = "./lambda_function.zip" # Path to your Lambda deployment package
-  
-  # # Runtime Management Configuration
-  # runtime_management_config {
-  #   update_runtime_on       = "Auto"
-  #   runtime_update_mode     = "Function"
-  # }
+ }
+
+# Create an API Gateway REST API
+resource "aws_api_gateway_rest_api" "example_api" {
+  name        = "example-api"
+  description = "API Gateway for Lambda function"
 }
 
-resource "aws_lambda_event_source_mapping" "example_mapping" {
-  # event_source_arn = "arn:aws:sqs:region:account-id:queue-name" # Example: SQS
-  event_source_arn = aws_sqs_queue.example_queue.arn
-  function_name    = aws_lambda_function.example_lambda.function_name
-  batch_size       = 10
-
-  # Retry and event age settings
-  # maximum_retry_attempts = 2
-  # maximum_record_age_in_seconds = 21600
+# Create a resource (endpoint) for the API
+resource "aws_api_gateway_resource" "example_resource" {
+  rest_api_id = aws_api_gateway_rest_api.example_api.id
+  parent_id   = aws_api_gateway_rest_api.example_api.root_resource_id
+  path_part   = "accretion-posting"
 }
 
-# # Lambda Function Event Invoke Config
-# resource "aws_lambda_event_invoke_config" "example_invoke_config" {
-#   function_name          = aws_lambda_function.example_lambda.function_name
-#   maximum_event_age_in_seconds = 21600
-#   maximum_retry_attempts = 2
-# }
-
-# API Gateway (api1)
-resource "aws_apigatewayv2_api" "api1" {
-  name          = "api1"
-  protocol_type = "HTTP"
+# Create a POST method for the resource
+resource "aws_api_gateway_method" "example_post_method" {
+  rest_api_id   = aws_api_gateway_rest_api.example_api.id
+  resource_id   = aws_api_gateway_resource.example_resource.id
+  http_method   = "POST"
+  authorization = "NONE"
 }
 
-resource "aws_apigatewayv2_route" "api1_route" {
-  api_id    = aws_apigatewayv2_api.api1.id
-  route_key = "POST /accretion-posting"
+# Lambda integration with API Gateway
+resource "aws_api_gateway_integration" "example_integration" {
+  rest_api_id = aws_api_gateway_rest_api.example_api.id
+  resource_id = aws_api_gateway_resource.example_resource.id
+  http_method = aws_api_gateway_method.example_post_method.http_method
+  integration_http_method = "POST"
+  type = "AWS_PROXY"
+  uri = "arn:aws:apigateway:${data.aws_region.current.name}:lambda:path/2015-03-31/functions/${aws_lambda_function.example_lambda.arn}/invocations"
 }
 
-resource "aws_apigatewayv2_integration" "api1_integration" {
-  api_id             = aws_apigatewayv2_api.api1.id
-  integration_type   = "AWS_PROXY"
-  integration_uri    = aws_lambda_function.example_lambda.invoke_arn
-  payload_format_version = "2.0"
+# Grant API Gateway permissions to invoke Lambda function
+resource "aws_lambda_permission" "example_lambda_permission" {
+  statement_id  = "AllowAPIGatewayInvoke"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.example_lambda.function_name
+  principal     = "apigateway.amazonaws.com"
 }
 
-# API Gateway (api2)
-resource "aws_apigatewayv2_api" "api2" {
-  name          = "api2"
-  protocol_type = "HTTP"
+# Deploy the API Gateway
+resource "aws_api_gateway_deployment" "example_deployment" {
+  rest_api_id = aws_api_gateway_rest_api.example_api.id
+  stage_name  = "prod"
+
+  depends_on = [
+    aws_api_gateway_integration.example_integration
+  ]
 }
 
-resource "aws_apigatewayv2_route" "api2_route" {
-  api_id    = aws_apigatewayv2_api.api2.id
-  route_key = "POST /depreciation-posting"
+# Optionally, create another resource and method for depreciation-posting (if needed)
+resource "aws_api_gateway_resource" "depreciation_resource" {
+  rest_api_id = aws_api_gateway_rest_api.example_api.id
+  parent_id   = aws_api_gateway_rest_api.example_api.root_resource_id
+  path_part   = "depreciation-posting"
 }
 
-resource "aws_apigatewayv2_integration" "api2_integration" {
-  api_id             = aws_apigatewayv2_api.api2.id
-  integration_type   = "AWS_PROXY"
-  integration_uri    = aws_lambda_function.example_lambda.invoke_arn
-  payload_format_version = "2.0"
+resource "aws_api_gateway_method" "depreciation_post_method" {
+  rest_api_id   = aws_api_gateway_rest_api.example_api.id
+  resource_id   = aws_api_gateway_resource.depreciation_resource.id
+  http_method   = "POST"
+  authorization = "NONE"
 }
 
-resource "aws_sqs_queue" "example_queue" {
-  name = "example-queue"
+resource "aws_api_gateway_integration" "depreciation_integration" {
+  rest_api_id = aws_api_gateway_rest_api.example_api.id
+  resource_id = aws_api_gateway_resource.depreciation_resource.id
+  http_method = aws_api_gateway_method.depreciation_post_method.http_method
+  integration_http_method = "POST"
+  type = "AWS_PROXY"
+  uri = "arn:aws:apigateway:${data.aws_region.current.name}:lambda:path/2015-03-31/functions/${aws_lambda_function.example_lambda.arn}/invocations"
+}
+
+resource "aws_lambda_permission" "depreciation_lambda_permission" {
+  statement_id  = "AllowAPIGatewayInvokeDepreciation"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.example_lambda.function_name
+  principal     = "apigateway.amazonaws.com"
 }
