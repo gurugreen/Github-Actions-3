@@ -85,7 +85,7 @@ resource "aws_api_gateway_integration" "example_integration" {
   http_method = aws_api_gateway_method.example_post_method.http_method
   integration_http_method = "POST"
   type = "AWS_PROXY"
-  uri = "arn:aws:apigateway:${data.aws_region.current.name}:lambda:path/2015-03-31/functions/${aws_lambda_function.example_lambda.arn}/invocations"
+  uri = "arn:aws:apigateway:${var.aws_region}:lambda:path/2015-03-31/functions/${aws_lambda_function.example_lambda.arn}/invocations"
 }
 
 # Grant API Gateway permissions to invoke Lambda function
@@ -126,7 +126,7 @@ resource "aws_api_gateway_integration" "depreciation_integration" {
   http_method = aws_api_gateway_method.depreciation_post_method.http_method
   integration_http_method = "POST"
   type = "AWS_PROXY"
-  uri = "arn:aws:apigateway:${data.aws_region.current.name}:lambda:path/2015-03-31/functions/${aws_lambda_function.example_lambda.arn}/invocations"
+  uri = "arn:aws:apigateway:${var.aws_region}:lambda:path/2015-03-31/functions/${aws_lambda_function.example_lambda.arn}/invocations"
 }
 
 resource "aws_lambda_permission" "depreciation_lambda_permission" {
