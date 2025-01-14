@@ -138,3 +138,5 @@ resource "aws_lambda_permission" "depreciation_lambda_permission" {
   principal     = "apigateway.amazonaws.com"
   source_arn    = "arn:aws:execute-api:${var.aws_region}:${data.aws_caller_identity.current.account_id}:${aws_api_gateway_rest_api.example_api.id}/*/POST/depreciation-posting"
 }
+
+data "aws_caller_identity" "current" {}
