@@ -76,7 +76,7 @@ resource "aws_api_gateway_method" "example_post_method" {
   resource_id   = aws_api_gateway_resource.example_resource.id
   http_method   = "POST"
   authorization = "CUSTOM"
-  authorizer_id = aws_api_gateway_authorizer.custom_authorizer.id
+  # authorizer_id = aws_api_gateway_authorizer.custom_authorizer.id
 }
 
 # Lambda integration with API Gateway
@@ -122,7 +122,7 @@ resource "aws_api_gateway_method" "depreciation_post_method" {
   resource_id   = aws_api_gateway_resource.depreciation_resource.id
   http_method   = "POST"
   authorization = "CUSTOM"
-  authorizer_id = aws_api_gateway_authorizer.custom_authorizer.id
+  # authorizer_id = aws_api_gateway_authorizer.custom_authorizer.id
 }
 
 resource "aws_api_gateway_integration" "depreciation_integration" {
