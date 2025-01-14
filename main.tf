@@ -144,15 +144,15 @@ resource "aws_lambda_permission" "depreciation_lambda_permission" {
 
 data "aws_caller_identity" "current" {}
 
-# Custom API Gateway Authorizer
-resource "aws_api_gateway_authorizer" "custom_authorizer" {
-  name                   = "CustomLambdaAuthorizer"
-  rest_api_id            = aws_api_gateway_rest_api.example_api.id
-  authorizer_uri         = "arn:aws:apigateway:${var.aws_region}:lambda:path/2015-03-31/functions/${aws_lambda_function.custom_authorizer.arn}/invocations"
-  identity_source        = "method.request.header.Authorization"
-  type                   = "TOKEN"
-  authorizer_result_ttl_in_seconds = 300
-}
+# # Custom API Gateway Authorizer
+# resource "aws_api_gateway_authorizer" "custom_authorizer" {
+#   name                   = "CustomLambdaAuthorizer"
+#   rest_api_id            = aws_api_gateway_rest_api.example_api.id
+#   authorizer_uri         = "arn:aws:apigateway:${var.aws_region}:lambda:path/2015-03-31/functions/${aws_lambda_function.custom_authorizer.arn}/invocations"
+#   identity_source        = "method.request.header.Authorization"
+#   type                   = "TOKEN"
+#   authorizer_result_ttl_in_seconds = 300
+# }
 
 resource "aws_api_gateway_stage" "example_stage" {
   rest_api_id = aws_api_gateway_rest_api.example_api.id
