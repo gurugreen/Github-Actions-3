@@ -38,8 +38,8 @@ jobs:
 
       - name: Terraform Plan
         run: |
-          terraform plan -out=tfplan
-          terraform show -no-color tfplan
+          terraform plan 
+          terraform show 
 
   terraform-cd:
     name: Terraform CD
