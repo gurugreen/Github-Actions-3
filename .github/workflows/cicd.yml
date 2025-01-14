@@ -33,8 +33,13 @@ jobs:
       - name: Initialize Terraform
         run: terraform init
 
+      - name: Terraform Refresh (Sync State)
+        run: terraform refresh        
+
       - name: Terraform Plan
-        run: terraform plan
+        run: |
+          terraform plan -out=tfplan
+          terraform show -no-color tfplan
 
   terraform-cd:
     name: Terraform CD
