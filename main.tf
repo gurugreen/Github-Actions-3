@@ -70,7 +70,7 @@ resource "aws_lambda_event_source_mapping" "example_mapping" {
   batch_size       = 10
 
   # Retry and event age settings
-  maximum_retry_attempts = 2
+  # maximum_retry_attempts = 2
   maximum_record_age_in_seconds = 21600
 }
 
