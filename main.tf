@@ -65,6 +65,7 @@ resource "aws_lambda_function" "example_lambda" {
 
 resource "aws_lambda_event_source_mapping" "example_mapping" {
   # event_source_arn = "arn:aws:sqs:region:account-id:queue-name" # Example: SQS
+  event_source_arn = aws_sqs_queue.example_queue.arn
   function_name    = aws_lambda_function.example_lambda.function_name
   batch_size       = 10
 
@@ -114,4 +115,8 @@ resource "aws_apigatewayv2_integration" "api2_integration" {
   integration_type   = "AWS_PROXY"
   integration_uri    = aws_lambda_function.example_lambda.invoke_arn
   payload_format_version = "2.0"
+}
+
+resource "aws_sqs_queue" "example_queue" {
+  name = "example-queue"
 }
