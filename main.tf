@@ -76,6 +76,7 @@ resource "aws_api_gateway_method" "example_post_method" {
   resource_id   = aws_api_gateway_resource.example_resource.id
   http_method   = "POST"
   authorization = "CUSTOM"
+  authorizer_id = aws_api_gateway_authorizer.custom_authorizer.id
 }
 
 # Lambda integration with API Gateway
@@ -104,7 +105,8 @@ resource "aws_api_gateway_deployment" "example_deployment" {
 
   depends_on = [
     aws_api_gateway_integration.example_integration,
-    aws_api_gateway_integration.depreciation_integration
+    aws_api_gateway_method.example_post_method,
+    aws_api_gateway_method.depreciation_post_method
   ]
 }
 
@@ -120,6 +122,7 @@ resource "aws_api_gateway_method" "depreciation_post_method" {
   resource_id   = aws_api_gateway_resource.depreciation_resource.id
   http_method   = "POST"
   authorization = "CUSTOM"
+  authorizer_id = aws_api_gateway_authorizer.custom_authorizer.id
 }
 
 resource "aws_api_gateway_integration" "depreciation_integration" {
@@ -140,3 +143,26 @@ resource "aws_lambda_permission" "depreciation_lambda_permission" {
 }
 
 data "aws_caller_identity" "current" {}
+
+# Custom API Gateway Authorizer
+resource "aws_api_gateway_authorizer" "custom_authorizer" {
+  name                   = "CustomLambdaAuthorizer"
+  rest_api_id            = aws_api_gateway_rest_api.example_api.id
+  authorizer_uri         = "arn:aws:apigateway:${var.aws_region}:lambda:path/2015-03-31/functions/${aws_lambda_function.custom_authorizer.arn}/invocations"
+  identity_source        = "method.request.header.Authorization"
+  type                   = "TOKEN"
+  authorizer_result_ttl_in_seconds = 300
+}
+
+resource "aws_api_gateway_stage" "example_stage" {
+  rest_api_id = aws_api_gateway_rest_api.example_api.id
+  stage_name  = "Demo"
+  deployment_id = aws_api_gateway_deployment.example_deployment.id
+
+  description = "Demo stage for API Gateway"
+
+  # Stage Variables
+  # variables = {
+  #   some_variable = "value"  # Variable key-value pair
+  # }
+}
